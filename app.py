@@ -21,9 +21,62 @@ class App(FastAPI):
 APP = App()
 
 
-@APP.get("/")
+@APP.get("/", response_class=HTMLResponse)
 async def root():
-    return "{ \"unavailable\" }"
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hello, from AWS ECS!!</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 40px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                text-align: center;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            h1 {
+                font-size: 3em;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            p {
+                font-size: 1.2em;
+                margin-bottom: 30px;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .badge {
+                background: rgba(255,255,255,0.2);
+                padding: 10px 20px;
+                border-radius: 25px;
+                display: inline-block;
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎉 Hello from AWS ECS! 🎉</h1>
+            <p>Your containerized FastAPI application is running successfully!</p>
+            <div class="badge">🐳 Docker</div>
+            <div class="badge">🚀 AWS ECS</div>
+            <div class="badge">⚡ FastAPI</div>
+            <div class="badge">🔄 GitHub Actions</div>
+        </div>
+    </body>
+    </html>
+    """
 
 
 @APP.get("/hello/{name}")
