@@ -36,5 +36,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 ecs-task-execution-role-policy.json
-task-definition.json
 examples/
+github-actions*.json

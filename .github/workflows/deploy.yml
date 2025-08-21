@@ -29,22 +29,32 @@ jobs:
 
     - name: Check Docker availability
       run: |
-        if ! command -v docker &> /dev/null; then
-          echo "Docker not found. Installing Docker..."
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sudo sh get-docker.sh
-          sudo usermod -aG docker $USER
-          sudo systemctl start docker
-          sudo systemctl enable docker
-        else
+        if command -v docker &> /dev/null; then
           echo "Docker is available"
           docker --version
+        else
+          echo "❌ Docker not found. Please install Docker on your self-hosted runner."
+          echo "Run: curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh"
+          exit 1
         fi
 
-    - name: Start Docker service
+    - name: Ensure Docker is accessible
       run: |
-        sudo systemctl start docker
-        sudo chmod 666 /var/run/docker.sock || true
+        # Try to run Docker, if it fails due to permissions, provide helpful message
+        if ! docker info &> /dev/null; then
+          echo "Docker daemon not accessible. Checking common issues..."
+          echo "Current user: $(whoami)"
+          echo "Docker groups: $(groups | grep docker || echo 'Not in docker group')"
+          echo ""
+          echo "To fix this, run on your runner machine:"
+          echo "sudo usermod -aG docker $(whoami)"
+          echo "sudo systemctl start docker"
+          echo "Then restart your GitHub Actions runner."
+          exit 1
+        else
+          echo "✅ Docker is working correctly"
+          docker info --format '{{.ServerVersion}}'
+        fi
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
